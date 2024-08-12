@@ -39,11 +39,12 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
-
+#! Исправить название модели. Связь многие ко многим
 class Subjects(models.Model):
     name = models.CharField(max_length=25)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
+#! Пользователь не нужен
 class Theme(models.Model):
     name = models.CharField(max_length=70)
     subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
@@ -52,17 +53,22 @@ class Theme(models.Model):
 class Tests(models.Model):
     theme_id = models.ForeignKey(Theme, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
+    #! Много пользователей для одного теста и наоборот
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
+
+#! Question
 class Answers(models.Model):
     tests_id = models.ForeignKey(Tests, on_delete=models.CASCADE)
     answer = models.CharField(max_length=100)
     is_true = models.BooleanField(default=False)
 
+#! Session/Seans
 class Activate(models.Model):
     id_test = models.ForeignKey(Tests, on_delete=models.CASCADE)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
+
 
 class Action(models.Model):
     id_student = models.ForeignKey(User, on_delete=models.CASCADE)
