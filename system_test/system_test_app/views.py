@@ -16,7 +16,8 @@ class UserAPIView(GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserLoginSerializer
     @action(detail=False, methods=["post"])
-    def login(self, request):
+    def login(self, request, *args, **kwargs):
+        #! Слишком много логики в одном методе! Нужно использовать через сериализатор!
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone_number = serializer.validated_data['phone_number']
