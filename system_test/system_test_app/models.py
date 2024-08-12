@@ -61,8 +61,8 @@ class Answers(models.Model):
 
 class Activate(models.Model):
     id_test = models.ForeignKey(Tests, on_delete=models.CASCADE)
-    date_start = models.DateField(auto_now_add=True)
-    date_end = models.DateField(auto_now_add=True)
+    date_start = models.DateTimeField()
+    date_end = models.DateTimeField()
 
 class Action(models.Model):
     id_student = models.ForeignKey(User, on_delete=models.CASCADE)
