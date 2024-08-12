@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Subjects, Theme, Tests, Answers, Activate
-models = [User, Subjects, Theme, Tests, Answers, Activate]
+from .models import User, Subject, Theme, Test, Answer, Activate
+models = [User, Subject, Theme, Test, Answer, Activate]
 for model in models:
     admin.site.register(model)

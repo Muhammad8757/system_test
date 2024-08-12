@@ -1,15 +1,27 @@
 from rest_framework import serializers
-from .models import Action, Subjects, Theme, Tests, Answers, Activate
-
+from .models import Action, Subject, Theme, Test, Answer, Activate, User
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.response import Response
 
 class UserLoginSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=15)
     password = serializers.CharField(write_only=True)
 
-
+    def validate(self, attrs):
+        phone_number = attrs['phone_number']
+        password = attrs['password']
+        user = User.objects.get(phone_number = phone_number, password=password)
+        if not user:
+            raise Exception("user not found")
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        })
+    
 class SubjectDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subjects
+        model = Subject
         fields = ['id','name', 'user_id']
 
 class ThemeDetailSerializer(serializers.ModelSerializer):
@@ -24,7 +36,7 @@ class ThemeDetailSerializer(serializers.ModelSerializer):
 
 class AnswerDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Answers
+        model = Answer
         fields = ['answer']
 
 class TestCreateSerializer(serializers.Serializer):
@@ -33,7 +45,7 @@ class TestCreateSerializer(serializers.Serializer):
     correct_answer = serializers.IntegerField()
     
     def create(self, validated_data):
-        test = Tests.objects.create(
+        test = Test.objects.create(
             title=validated_data['title'],
             user_id=self.context['request'].user
         )
@@ -41,7 +53,7 @@ class TestCreateSerializer(serializers.Serializer):
         correct_answer_index = validated_data.get('correct_answer', -1)
         
         for idx, answer_text in enumerate(answers_data):
-            Answers.objects.create(
+            Answer.objects.create(
                 tests_id=test,
                 answer=answer_text,
                 is_true=(idx == correct_answer_index)
@@ -59,7 +71,7 @@ class TestWithDetailsSerializer(serializers.Serializer):
         
         theme = Theme.objects.get(id=theme_id)
 
-        test = Tests.objects.create(
+        test = Test.objects.create(
             theme_id=theme,
             title=test_data['title'],
             user_id=user
@@ -69,7 +81,7 @@ class TestWithDetailsSerializer(serializers.Serializer):
         correct_answer_index = test_data.get('correct_answer', -1)
         
         for idx, answer_text in enumerate(answers_data):
-            Answers.objects.create(
+            Answer.objects.create(
                 tests_id=test,
                 answer=answer_text,
                 is_true=(idx == correct_answer_index)
@@ -79,7 +91,7 @@ class TestWithDetailsSerializer(serializers.Serializer):
 class TestDetailSerializer(serializers.ModelSerializer):
     answers = AnswerDetailSerializer(many=True, source='answers_set')
     class Meta:
-        model = Tests
+        model = Test
         fields = '__all__'
 
 class ActivateWithTestSerializer(serializers.ModelSerializer):

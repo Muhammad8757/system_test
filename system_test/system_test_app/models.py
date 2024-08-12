@@ -40,27 +40,27 @@ class User(AbstractBaseUser):
         return True
 
 
-class Subjects(models.Model):
+class Subject(models.Model):
     name = models.CharField(max_length=25)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Theme(models.Model):
     name = models.CharField(max_length=70)
-    subject_id = models.ForeignKey(Subjects, on_delete=models.CASCADE)
+    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class Tests(models.Model):
+class Test(models.Model):
     theme_id = models.ForeignKey(Theme, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class Answers(models.Model):
-    tests_id = models.ForeignKey(Tests, on_delete=models.CASCADE)
-    answer = models.CharField(max_length=100)
+class Answer(models.Model):
+    tests_id = models.ForeignKey(Test, on_delete=models.CASCADE)
+    question = models.CharField(max_length=100)
     is_true = models.BooleanField(default=False)
 
 class Activate(models.Model):
-    id_test = models.ForeignKey(Tests, on_delete=models.CASCADE)
+    id_test = models.ForeignKey(Test, on_delete=models.CASCADE)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
 
